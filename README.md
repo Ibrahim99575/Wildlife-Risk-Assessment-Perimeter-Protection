@@ -4,10 +4,10 @@ Welcome to our GitHub repository for our farm security enhancement project using
 
 
 # Results
-<img src="https://github.com/Ibrahim99575/animal-free-farming/blob/main/Picture1.png" alt="CNN Accuracy Graph" width="300" height="200" style={float:left}>
-<img src="https://github.com/Ibrahim99575/animal-free-farming/blob/main/Picture2.png" alt="CNN Accuracy Graph" width="300" height="200" style={float:left;clear:right}>
-<img src="https://github.com/Ibrahim99575/animal-free-farming/blob/main/Picture3.png" alt="CNN Accuracy Graph" width="300" height="200" style={float:left}>
-<img src="https://github.com/Ibrahim99575/animal-free-farming/blob/main/Picture4.png" alt="CNN Accuracy Graph" width="300" height="200" style={float:left, clear:right}>
+<img src="https://github.com/Ibrahim99575/animal-free-farming/blob/main/Picture1.png" alt="CNN Accuracy Graph" width="500" height="300">
+<img src="https://github.com/Ibrahim99575/animal-free-farming/blob/main/Picture2.png" alt="CNN Accuracy Graph" width="500" height="300">
+<img src="https://github.com/Ibrahim99575/animal-free-farming/blob/main/Picture3.png" alt="CNN Accuracy Graph" width="500" height="300">
+<img src="https://github.com/Ibrahim99575/animal-free-farming/blob/main/Picture4.png" alt="CNN Accuracy Graph" width="500" height="300">
 
 
 # Wihout BGG16 Base Model
