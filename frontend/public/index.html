@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildlife Risk Assessment System</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🦁 Wildlife Risk Assessment & Perimeter Protection</h1>
+            <div class="status-indicator" id="status">
+                <span class="status-dot"></span>
+                <span>System Status: Initializing...</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard">
+            <!-- Live Feed Section -->
+            <section class="live-feed">
+                <div class="section-header">
+                    <h2>📹 Live Camera Feed</h2>
+                    <div class="camera-controls">
+                        <select id="cameraSelect">
+                            <option value="0">Camera 1</option>
+                        </select>
+                        <button id="startBtn" class="btn btn-success">Start</button>
+                        <button id="stopBtn" class="btn btn-danger">Stop</button>
+                        <button id="recordBtn" class="btn btn-warning">Record</button>
+                    </div>
+                </div>
+                <div class="video-container">
+                    <div class="video-placeholder" id="videoPlaceholder">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 7l-7 5 7 5V7z"></path>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                        </svg>
+                        <p>Live Video Feed</p>
+                    </div>
+                    <img id="videoFeed" src="" alt="Live Video Feed" style="display: none;">
+                    <div class="video-overlay" id="detectionOverlay"></div>
+                </div>
+            </section>
+
+            <!-- Alerts Section -->
+            <section class="alerts-section">
+                <h2>⚠️ Recent Alerts</h2>
+                <div id="alertsList" class="alerts-list"></div>
+            </section>
+
+            <!-- Statistics Section -->
+            <section class="statistics">
+                <h2>📊 System Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Detections</h3>
+                        <p class="stat-value" id="totalDetections">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Danger Alerts</h3>
+                        <p class="stat-value danger" id="dangerAlerts">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Cameras</h3>
+                        <p class="stat-value" id="activeCameras">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>System Uptime</h3>
+                        <p class="stat-value" id="uptime">00:00:00</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detection History -->
+            <section class="detection-history">
+                <h2>🔍 Recent Detections</h2>
+                <div class="table-container">
+                    <table id="detectionsTable">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Species</th>
+                                <th>Danger Level</th>
+                                <th>Distance</th>
+                                <th>Camera</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detectionsBody">
+                            <tr>
+                                <td colspan="6">No detections yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Recordings Section -->
+            <section class="recordings-section">
+                <div class="section-header">
+                    <h2>🎥 Recorded Videos</h2>
+                    <button class="btn btn-primary" id="refreshRecordings" onclick="loadRecordings()">🔄 Refresh</button>
+                </div>
+                <div id="recordingsList" class="recordings-list">
+                    <p style="color: #6b7280;">No recordings yet</p>
+                </div>
+                
+                <!-- Video Player Modal -->
+                <div id="videoPlayerModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal" onclick="closeVideoPlayer()">&times;</span>
+                        <h3 id="videoTitle">Video Playback</h3>
+                        <video 
+                            id="videoPlayer" 
+                            class="video-js vjs-default-skin vjs-big-play-centered" 
+                            controls 
+                            preload="auto" 
+                            width="100%" 
+                            style="max-height: 70vh;">
+                            <source id="videoSource" src="" type="video/mp4">
+                            <p class="vjs-no-js">
+                                To view this video please enable JavaScript, and consider upgrading to a web browser that
+                                supports HTML5 video.
+                            </p>
+                        </video>
+                    </div>
+                </div>
+                
+                <!-- Delete Confirmation Modal -->
+                <div id="deleteConfirmModal" class="modal">
+                    <div class="modal-content" style="max-width: 400px;">
+                        <span class="close-modal" onclick="closeDeleteConfirm()">&times;</span>
+                        <h3>⚠️ Confirm Deletion</h3>
+                        <p id="deleteConfirmMessage" style="margin: 20px 0; color: #4b5563;">
+                            Are you sure you want to delete this recording?
+                        </p>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button class="btn btn-secondary" onclick="closeDeleteConfirm()">Cancel</button>
+                            <button class="btn btn-danger" id="confirmDeleteBtn">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Panel -->
+            <section class="settings-panel">
+                <h2>⚙️ Settings</h2>
+                <div class="settings-content">
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="alertsEnabled" checked>
+                            Enable SMS/Email Alerts
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            Detection Confidence Threshold:
+                            <input type="range" id="confidenceThreshold" min="0" max="100" value="50">
+                            <span id="confidenceValue">50%</span>
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            Minimum Distance Alert (cm):
+                            <input type="number" id="minDistance" value="100" min="10" max="500">
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" id="saveSettings">Save Settings</button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Video.js JavaScript -->
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
